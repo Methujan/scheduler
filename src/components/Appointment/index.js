@@ -6,6 +6,7 @@ import Empty from "./Empty";
 import Form from "./Form";
 import Status from "./Status";
 import Confirm from "./Confirm";
+import Error from "./Error";
 import useVisualMode from "hooks/useVisualMode";
 import axios from "axios";
 
@@ -17,6 +18,8 @@ export default function Appointment(props) {
   const DELETING = "DELETING";
   const CONFIRM = "CONFIRM";
   const EDIT = "EDIT";
+  const ERROR_SAVE = "ERROR_SAVE";
+  const ERROR_DELETE = "ERROR_DELETE";
 
   const { mode, transition, back } = useVisualMode(
     props.interview ? SHOW : EMPTY
@@ -25,12 +28,9 @@ export default function Appointment(props) {
   function onAdd() {
     transition(CREATE);
   }
-  function onCancel() {
-    back();
-  }
 
   function edit() {
-    transition("EDIT");
+    transition(EDIT);
   }
 
   function save(name, interviewer) {
@@ -38,8 +38,15 @@ export default function Appointment(props) {
       student: name,
       interviewer,
     };
-    transition("SAVING");
+    transition(SAVING);
 
+    props
+      .bookInterview(props.id, interview)
+      .then(() => {
+        transition("SHOW");
+      })
+      .catch((error) => transition(ERROR_SAVE, true));
+    /*
     axios
       .put(`/api/appointments/${props.id}`, {
         interview,
@@ -47,9 +54,9 @@ export default function Appointment(props) {
       .then((response) => {
         props.bookInterview(props.id, interview);
         transition(SHOW);
-      });
-    //props.bookInterview(props.id, interview);
-    //transition(SHOW);
+      })
+      .catch((error) => transition(ERROR_SAVE, true));
+   */
   }
   function deleteInterview(name, interviewer) {
     const interview = {
@@ -57,16 +64,25 @@ export default function Appointment(props) {
       interviewer,
     };
     if (mode === CONFIRM) {
-      transition(DELETING);
-
+      transition(DELETING, true);
+      props
+        .cancelInterview(props.id, interview)
+        .then(() => {
+          transition(EMPTY);
+        })
+        .catch((error) => transition(ERROR_DELETE, true));
+      /*
       axios
         .delete(`/api/appointments/${props.id}`, {
           interview,
         })
+        //.cancelInterview(props.id, interview)
         .then((response) => {
           props.cancelInterview(props.id, interview);
           transition(EMPTY);
-        });
+        })
+        .catch((error) => transition(ERROR_DELETE, true));
+        */
     } else {
       transition(CONFIRM);
     }
@@ -105,6 +121,12 @@ export default function Appointment(props) {
           interviewers={props.interviewers}
           name={props.interview.student}
         />
+      )}
+      {mode === ERROR_SAVE && (
+        <Error message="Error in saving" onClose={back} />
+      )}
+      {mode === ERROR_DELETE && (
+        <Error message="Error in deleting" onClose={back} />
       )}
     </article>
   );

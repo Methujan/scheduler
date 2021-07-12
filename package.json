@@ -1,7 +1,7 @@
 {
   "name": "scheduler",
   "version": "0.1.0",
-  "proxy": "http://localhost:8001",
+  "proxy": "http://localhost:3000",
   "private": true,
   "dependencies": {
     "axios": "^0.21.1",
