@@ -7,17 +7,14 @@ export default function Form(props) {
   const [interviewer, setInterviewer] = useState(props.interviewer || null);
   const [error, setError] = useState("");
 
-  const reset = () => {
-    setName("");
-    setInterviewer(null);
-  };
   const cancel = () => {
     reset();
     props.onCancel();
   };
 
-  const save = () => {
-    props.onSave(name, interviewer);
+  const reset = () => {
+    setName("");
+    setInterviewer(null);
   };
 
   function validate() {
@@ -25,15 +22,17 @@ export default function Form(props) {
       setError("Student name cannot be blank");
       return;
     }
+    setError("");
     props.onSave(name, interviewer);
   }
+
   return (
     <main className="appointment__card appointment__card--create">
       <section className="appointment__card-left">
         <form autoComplete="off" onSubmit={(event) => event.preventDefault()}>
           <input
             className="appointment__create-input text--semi-bold"
-            name=""
+            name="name"
             type="text"
             placeholder="Enter Student Name"
             value={name}

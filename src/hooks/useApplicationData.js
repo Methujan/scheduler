@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
 export default function useApplicationData() {
@@ -51,6 +51,7 @@ export default function useApplicationData() {
     return state;
   };
 
+  //Books interview and updates the number of spots remaining
   function bookInterview(id, interview) {
     const appointment = {
       ...state.appointments[id],
@@ -61,9 +62,6 @@ export default function useApplicationData() {
       ...state.appointments,
       [id]: appointment,
     };
-
-    //const updatedState = { ...state, appointments };
-    //const updatedSpot = updateSpots(updatedState);
 
     return axios
       .put(`/api/appointments/${id}`, {
@@ -77,12 +75,12 @@ export default function useApplicationData() {
         setState((prevState) => {
           const newState = { ...prevState, appointments };
           const newNewState = updateSpots(newState);
-
           return newNewState;
         });
       });
   }
 
+  //Cancels interview and updates the number of spots remaining
   function cancelInterview(id) {
     const appointment = {
       ...state.appointments[id],
@@ -102,7 +100,6 @@ export default function useApplicationData() {
       setState((prevState) => {
         const newState = { ...prevState, appointments };
         const newNewState = updateSpots(newState);
-
         return newNewState;
       });
     });
