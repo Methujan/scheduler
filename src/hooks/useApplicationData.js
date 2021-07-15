@@ -26,6 +26,7 @@ export default function useApplicationData() {
     });
   }, []);
 
+  //Updates the number of remaining spots
   const updateSpots = (incomingState, day) => {
     const state = { ...incomingState };
     const currentDay = day || state.day;
